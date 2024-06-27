@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react";
 import sound from "./assets/audio/done.wav";
 import soundDelete from "./assets/audio/delete.wav";
+import Swal from "sweetalert2";
 
 const initialState = [];
 
@@ -44,6 +45,23 @@ function App() {
   };
 
   const deleteTask = (id) => {
+ Swal.fire({
+   title: "Are you sure?",
+   text: "You won't be able to revert this!",
+   icon: "warning",
+   showCancelButton: true,
+   confirmButtonColor: "#3085d6",
+   cancelButtonColor: "#d33",
+   confirmButtonText: "Yes, delete it!",
+ }).then((result) => {
+   if (result.isConfirmed) {
+     Swal.fire({
+       title: "Deleted!",
+       text: "Your file has been deleted.",
+       icon: "success",
+     });
+   }
+ });
     deleteButtonVoice();
     setDeletingTask(id);
     setTimeout(() => {
@@ -57,6 +75,13 @@ function App() {
   };
 
   const toggleDone = (id) => {
+    Swal.fire({
+      position: "top-end",
+      icon: "success",
+      title: "Your task has been done",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     playSound();
     dispatch({ type: "TOGGLE_DONE", payload: id });
   };
@@ -65,8 +90,10 @@ function App() {
     new Audio(sound).play();
   };
 
-  const pendingTasks = todos.filter((task) => !task.done);
+  const completingTasks = todos.filter((task) => !task.done);
   const completedTasks = todos.filter((task) => task.done);
+
+  
 
   return (
     <div className="min-h-screen bg-bcg p-10">
@@ -98,7 +125,7 @@ function App() {
               Completing Tasks
             </h3>
             <ul className="list-disc space-y-2">
-              {pendingTasks.map((t, index) => (
+              {completingTasks.map((t, index) => (
                 <li
                   key={t.id}
                   className={`flex justify-between items-center p-2 bg-gray-200 rounded transition duration-500 ${
